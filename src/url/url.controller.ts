@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { IUrl } from "../interfaces/url.interface";
 import { Url } from "../classes/url";
-import { Error } from "mongoose";
 
 export class UrlController {
   async createShortUrl(req: Request, res: Response) {
@@ -11,7 +10,7 @@ export class UrlController {
     );
     const url = new Url(<IUrl>{ redirect_url: req.body.url });
     try {
-      await url.create();
+      await url.save();
       res.status(200).json({
         result: "success",
         message: `URL Created /${url.slug} -> ${url.redirect_url}`,

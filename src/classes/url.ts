@@ -7,6 +7,7 @@ export class Url implements IUrl {
   redirect_url: String;
   constructor(url: IUrl) {
     this.redirect_url = url.redirect_url;
+    this.slug = url.slug || undefined;
   }
   private async generateUniqueSlug(): Promise<String> {
     let slug: String;
@@ -22,12 +23,13 @@ export class Url implements IUrl {
     return slug;
   }
 
-  async create(): Promise<any> {
-    this.slug = await this.generateUniqueSlug();
-    this.redirect_url = await this.redirect_url;
-    console.log("🚀 ~ file: url.ts:29 ~ Url ~ create ~ redirect_url:", this);
-
-    let entity = new UrlModel(this);
+  async save(): Promise<any> {
+    let entity;
+    if (this.slug) {
+      entity = UrlModel.findOne({ slug: this.slug });
+    } else {
+      entity = new UrlModel(<IUrl>this);
+    }
     return entity.save();
   }
 }
