@@ -1,8 +1,4 @@
-/**
- * URL Interface
- */
-interface IUrl {
-  id?: string;
-  slug: string;
-  redirect_url: string;
+export interface IUrl {
+  slug?: String;
+  redirect_url: String;
 }
