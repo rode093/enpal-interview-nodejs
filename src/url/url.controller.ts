@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import Url from "../models/url.model";
 
 export class UrlController {
   async createShortUrl(req: Request, res: Response) {
@@ -7,8 +6,8 @@ export class UrlController {
       "🚀 ~ file: url.controller.ts:6 ~ UrlController ~ createShortUrl ~ req:",
       req.body
     );
-    const url = new Url(req.body.url);
-    url.save();
+    // const url = new Url(req.body.url);
+    // url.save();
 
     res.setHeader("Content-Type", "text/json");
     res.send("I will save the link");
