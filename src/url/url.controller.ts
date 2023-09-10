@@ -8,21 +8,23 @@ export class UrlController {
       "🚀 ~ file: url.controller.ts:6 ~ UrlController ~ createShortUrl ~ req:",
       req.body
     );
-    const url = new Url(<IUrl>{ redirect_url: req.body.url });
     try {
+      const url = new Url(<IUrl>{ redirect_url: req.body.url });
       await url.save();
       res.status(200).json({
         result: "success",
         message: `URL Created /${url.slug} -> ${url.redirect_url}`,
       });
     } catch (error: any) {
-      console.log(
-        "🚀 ~ file: url.controller.ts:14 ~ UrlController ~ createShortUrl ~ error",
-        error
-      );
-      res
-        .status(500)
-        .json({ result: "error", message: `Failed to create the url` });
+      if (error.constructor.name == "AppException") {
+        res
+          .status(error.code)
+          .json({ result: "error", message: error.message });
+      } else {
+        res
+          .status(500)
+          .json({ result: "error", message: "Failed to create short url" });
+      }
     }
   }
 
