@@ -2,12 +2,14 @@ import { IUrl } from "../interfaces/url.interface";
 import { UrlModel } from "../schemas/url.schema";
 import { Capitalization, generateRandomString } from "ts-randomstring/lib";
 
-export class Url implements IUrl {
+export class Url {
   slug?: String | undefined;
-  redirect_url: String;
-  constructor(url: IUrl) {
-    this.redirect_url = url.redirect_url;
-    this.slug = url.slug || undefined;
+  redirect_url: String | undefined;
+  constructor(url?: IUrl) {
+    if (url) {
+      this.redirect_url = url.redirect_url;
+      this.slug = url.slug || undefined;
+    }
   }
   private async generateUniqueSlug(): Promise<String> {
     let slug: String;
@@ -26,10 +28,15 @@ export class Url implements IUrl {
   async save(): Promise<any> {
     let entity;
     if (this.slug) {
-      entity = UrlModel.findOne({ slug: this.slug });
+      entity = await this.findBySlug(this.slug);
     } else {
+      this.slug = await this.generateUniqueSlug();
       entity = new UrlModel(<IUrl>this);
     }
     return entity.save();
+  }
+
+  async findBySlug(slug: String): Promise<any> {
+    return UrlModel.findOne({ slug: slug });
   }
 }

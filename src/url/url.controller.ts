@@ -26,9 +26,18 @@ export class UrlController {
     }
   }
 
-  async redirectToOriginalUrl(req, res) {
-    console.log(`${req.method} ${req.url}`);
-    res.setHeader("Content-Type", "text/plain");
-    res.send("I should parse the URL and redirect");
+  async redirectToOriginalUrl(req: Request, res: Response) {
+    try {
+      const url = await new Url().findBySlug(req.params.slug);
+      if (url) {
+        return res.redirect(url.redirect_url);
+      }
+    } catch (error) {
+      console.log(
+        "🚀 ~ file: url.controller.ts:36 ~ UrlController ~ redirectToOriginalUrl ~ error: Error Executing db lookup",
+        error
+      );
+    }
+    res.sendStatus(404);
   }
 }
