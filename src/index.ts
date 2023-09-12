@@ -18,7 +18,7 @@ async function main() {
       console.log("🚀 ~ file: index.ts:17 ~ Failed to connect to db:", error);
       throw new Error("DB Connection failed");
     });
-    mongoose.connection.on("connected", (stream) => {
+    mongoose.connection.on("connected", () => {
       console.log("🚀 ~ file: index.ts:19 ~ DB Server is connected");
     });
   } catch (error) {

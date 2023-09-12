@@ -79,11 +79,6 @@ export class Url {
     ];
     bannedDomains.forEach((domain) => {
       let domain_parts = url_obj.host.split(".");
-      console.log(
-        "🚀 ~ file: url.ts:83 ~ Url ~ bannedDomains.forEach ~ domain_parts:",
-        domain_parts,
-        domain.split(".")[0]
-      );
       if (domain_parts[domain_parts.length - 2] == domain.split(".")[0]) {
         throw new AppException(<IAppError>{
           code: 451,

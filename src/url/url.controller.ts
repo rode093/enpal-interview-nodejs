@@ -5,14 +5,10 @@ import { URL } from "url";
 
 export class UrlController {
   async createShortUrl(req: Request, res: Response) {
-    console.log(
-      "🚀 ~ file: url.controller.ts:6 ~ UrlController ~ createShortUrl ~ req:",
-      req.body
-    );
     try {
       const url = new Url(<IUrl>{ redirect_url: req.body.url });
       await url.save();
-      res.status(200).json({
+      res.status(201).json({
         result: "success",
         message: `URL Created /${url.slug} -> ${url.redirect_url}`,
       });
