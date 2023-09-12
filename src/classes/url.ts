@@ -3,6 +3,7 @@ import { UrlModel } from "../schemas/url.schema";
 import { Capitalization, generateRandomString } from "ts-randomstring/lib";
 import { AppException } from "./app.exception";
 import { IAppError } from "../interfaces/app_error";
+import { bannedDomains, bannedWords } from "../constants/url.constants";
 
 export class Url {
   slug?: String | undefined;
@@ -52,13 +53,6 @@ export class Url {
       });
     }
     let url_obj = new URL(url.toString());
-    const bannedWords = [
-      "bannedi",
-      "bannedii",
-      "bannediii",
-      "bannediv",
-      "bannedv",
-    ];
 
     bannedWords.forEach((word) => {
       if (url_obj.href.includes(word)) {
@@ -70,13 +64,7 @@ export class Url {
     });
 
     //check illegal domain
-    const bannedDomains = [
-      "illegali.com",
-      "illegalii.com",
-      "illegaliii.com",
-      "illegaliv.com",
-      "illegalv.com",
-    ];
+
     bannedDomains.forEach((domain) => {
       let domain_parts = url_obj.host.split(".");
       if (domain_parts[domain_parts.length - 2] == domain.split(".")[0]) {
