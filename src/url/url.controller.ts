@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { IUrl } from "../interfaces/url.interface";
 import { Url } from "../classes/url";
+import { URL } from "url";
 
 export class UrlController {
   async createShortUrl(req: Request, res: Response) {
@@ -32,6 +33,26 @@ export class UrlController {
     try {
       const url = await new Url().findBySlug(req.params.slug);
       if (url) {
+        const restrictedDomains = [
+          "restrictedi.com",
+          "restrictedii.net",
+          "restrictediii.io",
+          "restrictediv.com",
+          "restrictedv.io",
+        ];
+        console.log(
+          restrictedDomains.includes(new URL(url.redirect_url).hostname)
+        );
+        if (
+          restrictedDomains.includes(new URL(url.redirect_url).hostname) &&
+          req.query.isadult != "true"
+        ) {
+          res.status(403).json({
+            result: "error",
+            message: "You're not allowed to access this page",
+          });
+          return;
+        }
         return res.redirect(url.redirect_url);
       }
     } catch (error) {
