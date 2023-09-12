@@ -1,6 +1,7 @@
 import * as httpMocks from "node-mocks-http";
 import { UrlController } from "./url.controller";
 import { faker } from "@faker-js/faker";
+import { bannedWords } from "../constants/url.constants";
 
 describe("UrlController", () => {
   let controller: UrlController;
@@ -49,5 +50,32 @@ describe("UrlController", () => {
     expect(response._getJSONData().message).toMatch(
       new RegExp(`^(URL Created)\\s\/[a-zA-Z0-9]{5}\\s->\\s${url}$`)
     );
+  });
+
+  it("Should not create a short URL", async () => {
+    bannedWords.forEach(async (word) => {
+      const url = faker.internet.url() + "/" + word;
+
+      const request = httpMocks.createRequest({
+        method: "POST",
+        url: "/link",
+        body: {
+          url: url,
+        },
+      });
+      const response = httpMocks.createResponse();
+      console.log(
+        "🚀 ~ file: url.controller.spec.ts:40 ~ it ~ response:",
+        response
+      );
+
+      await controller.createShortUrl(request, response);
+
+      expect(response.statusCode).toBe(400);
+      expect(response._getJSONData().result).toBe("error");
+      expect(response._getJSONData().message).toBe(
+        "URL contains a banned word"
+      );
+    });
   });
 });
