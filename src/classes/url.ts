@@ -29,7 +29,7 @@ export class Url {
   public setUrl(redirect_url: String): void {
     //build url object
 
-    this.redirect_url = this.validateUrl(redirect_url.toLowerCase());
+    this.redirect_url = this.validateUrl(redirect_url);
   }
 
   async save(): Promise<any> {
