@@ -14,11 +14,16 @@ export class Url {
       this.slug = url.slug || undefined;
     }
   }
-  private async generateUniqueSlug(): Promise<String> {
+  /**
+   * Generates unique slug of n characters long.
+   * @param length
+   * @returns Promise<String>
+   */
+  private async generateUniqueSlug(length: number = 5): Promise<String> {
     let slug: String;
     do {
       slug = generateRandomString({
-        length: 5,
+        length: length,
         capitalisation: Capitalization.Lowercase,
       });
       return slug;
@@ -26,12 +31,17 @@ export class Url {
     } while ((await UrlModel.find({ slug: slug })).length == 0);
   }
 
+  /**
+   * sets url after validating
+   * @param redirect_url
+   */
   public setUrl(redirect_url: String): void {
-    //build url object
-
     this.redirect_url = this.validateUrl(redirect_url);
   }
-
+  /**
+   * Saves url
+   * @returns Promise<any>
+   */
   async save(): Promise<any> {
     let entity;
     if (this.slug) {
@@ -42,7 +52,11 @@ export class Url {
     }
     return entity.save();
   }
-
+  /**
+   * This function validates url structure and checks if domain is banned or url contains banned words
+   * @param url
+   * @throws AppException
+   */
   private validateUrl(url: String) {
     let regex =
       /^(http(s):\/\/.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/;

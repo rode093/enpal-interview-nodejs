@@ -31,7 +31,7 @@ export class UrlController {
       const url = await new Url().findBySlug(req.params.slug);
       if (url) {
         if (
-          restrictedDomains.includes(new URL(url.redirect_url).hostname) &&
+          restrictedDomains.includes(new URL(url.redirect_url).hostname) && //checks if url is restricted and if yes, checks if isadult is set true
           req.query.isadult != "true"
         ) {
           res.status(403).json({
