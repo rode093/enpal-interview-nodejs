@@ -3,6 +3,7 @@ import { UrlModel } from "../schemas/url.schema";
 import { Capitalization, generateRandomString } from "ts-randomstring/lib";
 import { AppException } from "./app.exception";
 import { IAppError } from "../interfaces/app_error";
+import { bannedDomains, bannedWords } from "../constants/url.constants";
 
 export class Url {
   slug?: String | undefined;
@@ -13,11 +14,16 @@ export class Url {
       this.slug = url.slug || undefined;
     }
   }
-  private async generateUniqueSlug(): Promise<String> {
+  /**
+   * Generates unique slug of n characters long.
+   * @param length
+   * @returns Promise<String>
+   */
+  private async generateUniqueSlug(length: number = 5): Promise<String> {
     let slug: String;
     do {
       slug = generateRandomString({
-        length: 5,
+        length: length,
         capitalisation: Capitalization.Lowercase,
       });
       return slug;
@@ -25,12 +31,17 @@ export class Url {
     } while ((await UrlModel.find({ slug: slug })).length == 0);
   }
 
+  /**
+   * sets url after validating
+   * @param redirect_url
+   */
   public setUrl(redirect_url: String): void {
-    //build url object
-
-    this.redirect_url = this.validateUrl(redirect_url.toLowerCase());
+    this.redirect_url = this.validateUrl(redirect_url);
   }
-
+  /**
+   * Saves url
+   * @returns Promise<any>
+   */
   async save(): Promise<any> {
     let entity;
     if (this.slug) {
@@ -41,7 +52,11 @@ export class Url {
     }
     return entity.save();
   }
-
+  /**
+   * This function validates url structure and checks if domain is banned or url contains banned words
+   * @param url
+   * @throws AppException
+   */
   private validateUrl(url: String) {
     let regex =
       /^(http(s):\/\/.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/;
@@ -52,13 +67,6 @@ export class Url {
       });
     }
     let url_obj = new URL(url.toString());
-    const bannedWords = [
-      "bannedi",
-      "bannedii",
-      "bannediii",
-      "bannediv",
-      "bannedv",
-    ];
 
     bannedWords.forEach((word) => {
       if (url_obj.href.includes(word)) {
@@ -70,20 +78,9 @@ export class Url {
     });
 
     //check illegal domain
-    const bannedDomains = [
-      "illegali.com",
-      "illegalii.com",
-      "illegaliii.com",
-      "illegaliv.com",
-      "illegalv.com",
-    ];
+
     bannedDomains.forEach((domain) => {
       let domain_parts = url_obj.host.split(".");
-      console.log(
-        "🚀 ~ file: url.ts:83 ~ Url ~ bannedDomains.forEach ~ domain_parts:",
-        domain_parts,
-        domain.split(".")[0]
-      );
       if (domain_parts[domain_parts.length - 2] == domain.split(".")[0]) {
         throw new AppException(<IAppError>{
           code: 451,

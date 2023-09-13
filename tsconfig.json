@@ -15,6 +15,6 @@
     "noUnusedParameters": true,
     "outDir": "./out"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "jest.setup.ts"],
   "exclude": ["out", "node_modules"]
 }

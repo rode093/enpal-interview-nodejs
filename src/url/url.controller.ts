@@ -2,17 +2,14 @@ import { Request, Response } from "express";
 import { IUrl } from "../interfaces/url.interface";
 import { Url } from "../classes/url";
 import { URL } from "url";
+import { restrictedDomains } from "../constants/url.constants";
 
 export class UrlController {
   async createShortUrl(req: Request, res: Response) {
-    console.log(
-      "🚀 ~ file: url.controller.ts:6 ~ UrlController ~ createShortUrl ~ req:",
-      req.body
-    );
     try {
       const url = new Url(<IUrl>{ redirect_url: req.body.url });
       await url.save();
-      res.status(200).json({
+      res.status(201).json({
         result: "success",
         message: `URL Created /${url.slug} -> ${url.redirect_url}`,
       });
@@ -33,18 +30,8 @@ export class UrlController {
     try {
       const url = await new Url().findBySlug(req.params.slug);
       if (url) {
-        const restrictedDomains = [
-          "restrictedi.com",
-          "restrictedii.net",
-          "restrictediii.io",
-          "restrictediv.com",
-          "restrictedv.io",
-        ];
-        console.log(
-          restrictedDomains.includes(new URL(url.redirect_url).hostname)
-        );
         if (
-          restrictedDomains.includes(new URL(url.redirect_url).hostname) &&
+          restrictedDomains.includes(new URL(url.redirect_url).hostname) && //checks if url is restricted and if yes, checks if isadult is set true
           req.query.isadult != "true"
         ) {
           res.status(403).json({
